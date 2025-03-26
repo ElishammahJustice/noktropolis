@@ -1,6 +1,6 @@
 import axios from 'axios';
-import router from '@/router'; // Ensure correct router path
-import TokenService from '@/services/token.service'; // Token storage service
+import TokenService from '@/router/services/token.service'; // ✅ Fixed import path
+import router from '@/router'; // ✅ Using alias for cleaner imports
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api';
 
@@ -103,3 +103,4 @@ export const userAPI = {
 
 // Export API Client & Auth Token Setter
 export { apiClient, setAuthToken };
+export default apiClient;

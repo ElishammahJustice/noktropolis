@@ -74,7 +74,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuth } from '@/services/auth.service' // ✅ Ensure correct import path
+import { useAuth } from '../router/services/auth.service.js' // ✅ Ensure correct import path
 
 const router = useRouter()
 const { login, loading } = useAuth()

@@ -4,7 +4,7 @@
       <v-card-title>Vendor Management</v-card-title>
       <v-card-text>
         <v-data-table :headers="headers" :items="vendors" class="elevation-1">
-          <template v-slot:item.actions="{ item }">
+          <template v-slot:[`item.actions`]="{ item }">
             <v-btn color="primary" @click="approveVendor(item.id)" v-if="!item.approved">
               Approve
             </v-btn>

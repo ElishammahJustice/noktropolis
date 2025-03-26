@@ -5,7 +5,7 @@
       <v-card-title>User Management</v-card-title>
       <v-card-text>
         <v-data-table :headers="headers" :items="users" class="elevation-1">
-          <template v-slot:item.actions="{ item }">
+          <template v-slot:[`item.actions`]="{ item }">
             <v-btn color="primary" small @click="editUser(item)">Edit</v-btn>
             <v-btn color="red" small @click="toggleUserStatus(item)">
               {{ item.active ? 'Deactivate' : 'Activate' }}

@@ -1,5 +1,5 @@
-import router from '../index';
-import api from '../services/api';
+import router from '@/router'; // Use alias for cleaner imports
+import api from './api'; // Ensure correct path to API service
 
 class TokenService {
   setToken(token) {

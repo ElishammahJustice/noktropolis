@@ -32,10 +32,10 @@
 
         <!-- Transactions Table -->
         <v-data-table :headers="headers" :items="transactions" class="mt-5" dense>
-  <template #item.amount="{ item }">
+          <template v-slot:[`item.amount`]="{ item }">
     ${{ item.amount.toFixed(2) }}
   </template>
-  <template #item.status="{ item }">
+  <template v-slot:[`item.status`]="{ item }">
     <v-chip :color="item.status === 'Completed' ? 'green' : 'red'">
       {{ item.status }}
     </v-chip>

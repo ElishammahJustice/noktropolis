@@ -10,7 +10,7 @@
             <v-card>
               <v-img :src="item.image" height="200px" contain></v-img>
               <v-card-title>{{ item.name }}</v-card-title>
-              <v-card-subtitle>{{ item.price | currency }}</v-card-subtitle>
+              <v-card-subtitle>{{ formatCurrency(item.price) }}</v-card-subtitle>
               <v-card-actions>
                 <v-btn color="primary" @click="moveToCart(item)">Add to Cart</v-btn>
                 <v-btn color="red" @click="removeFromWishlist(item.id)">Remove</v-btn>
@@ -55,6 +55,11 @@ const moveToCart = async (item) => {
   } catch (error) {
     console.error('Error moving item to cart:', error);
   }
+};
+
+// ✅ Function to format price as currency
+const formatCurrency = (price) => {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(price);
 };
 
 onMounted(fetchWishlist);

@@ -11,7 +11,7 @@
         <v-tabs-items v-model="tab">
           <v-tab-item value="reviews">
             <v-data-table :headers="reviewHeaders" :items="reviews" class="elevation-1">
-              <template v-slot:item.actions="{ item }">
+              <template v-slot:[`item.actions`]="{ item }">
                 <v-btn icon color="red" @click="deleteReview(item.id)">
                   <v-icon>mdi-delete</v-icon>
                 </v-btn>
@@ -21,7 +21,7 @@
 
           <v-tab-item value="reports">
             <v-data-table :headers="reportHeaders" :items="reports" class="elevation-1">
-              <template v-slot:item.actions="{ item }">
+              <template v-slot:[`item.actions`]="{ item }">
                 <v-btn icon color="blue" @click="resolveReport(item.id)">
                   <v-icon>mdi-check</v-icon>
                 </v-btn>

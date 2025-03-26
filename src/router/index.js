@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuth } from '@/services/auth.service' // Import authentication service
+import { useAuth } from '../router/services/auth.service' // Import authentication service
 
 // General Public Pages
 import Home from '../views/HomePage.vue'
@@ -17,11 +17,11 @@ import PaymentPage from '../views/shop/PaymentPage.vue'
 
 // User Dashboard (for authenticated customers)
 import UserDashboard from '../views/User/UserDashboard.vue'
-import AccountSettings from '@/views/User/AccountSettings.vue'
-import MessagesandSupport from '@/views/User/MessagesandSupport.vue'
-import OrderHistory from '@/views/User/OrderHistory.vue'
+import AccountSettings from '../views/User/AccountSettings.vue'
+import MessagesandSupport from '../views/User/MessagesandSupport.vue'
+import OrderHistory from '../views/User/OrderHistory.vue'
 import ReviewsandRatings from '../views/User/ReviewsandRatings.vue'
-import WishList from '@/views/User/WishList.vue'
+import WishList from '../views/User/WishList.vue'
 // Vendor Pages (Only Accessible by Vendors)
 import VendorDashboard from '../views/Vendor/VendorDashboard.vue'
 import AddProduct from '../views/Vendor/AddProducts.vue'

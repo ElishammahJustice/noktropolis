@@ -7,15 +7,17 @@ import router from './router';
 // Vuetify
 import 'vuetify/styles';
 import { createVuetify } from 'vuetify';
-import { VBtn, VCard, VContainer, VRow, VCol, VTextField, VForm, VToolbar, VToolbarTitle, VAlert } from 'vuetify/components';
-import { Ripple } from 'vuetify/directives';
 import '@mdi/font/css/materialdesignicons.css';
 
-// Initialize Vuetify with only used components and directives
+import * as components from 'vuetify/components';
+import * as directives from 'vuetify/directives';
+
 const vuetify = createVuetify({
-  components: { VBtn, VCard, VContainer, VRow, VCol, VTextField, VForm, VToolbar, VToolbarTitle, VAlert },
-  directives: { Ripple }
+  components,
+  directives,
 });
+
+
 
 // Create Vue app
 const app = createApp(App);

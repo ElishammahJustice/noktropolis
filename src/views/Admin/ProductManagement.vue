@@ -9,7 +9,7 @@
           item-value="id"
           class="elevation-1"
         >
-          <template v-slot:item.actions="{ item }">
+        <template v-slot:[`item.actions`]="{ item }">
             <v-btn icon color="blue" @click="editProduct(item)">
               <v-icon>mdi-pencil</v-icon>
             </v-btn>

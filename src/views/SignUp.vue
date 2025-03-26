@@ -102,7 +102,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuth } from '@/services/auth.service'
+import { useAuth } from '../router/services/auth.service.js'
 
 const router = useRouter()
 const { register, loading } = useAuth()
@@ -150,12 +150,16 @@ async function handleSignup() {
       email: email.value,
       password: password.value,
       role: role.value.toLowerCase(), // Ensuring consistent role value (e.g., 'customer' or 'vendor')
-    })
+    });
 
-    successMessage.value = "Signup successful! Redirecting to login..."
-    setTimeout(() => router.push({ name: 'Login' }), 2000)
+    console.log(response.data); // ✅ Log response data
+
+    // ✅ Success message
+    successMessage.value = "Signup successful! Redirecting to login...";
+    setTimeout(() => router.push({ name: 'Login' }), 2000);
+
   } catch (err) {
-    errorMessage.value = err.response?.data?.message || "Signup failed. Please try again."
+    errorMessage.value = err.response?.data?.message || "Signup failed. Please try again.";
   }
 }
 

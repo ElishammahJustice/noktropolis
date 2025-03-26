@@ -114,8 +114,8 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useCartStore } from '../stores/cart'; 
-import { useAuth } from '@/services/auth.service'
+import { useCartStore } from '../stores/cart';
+import { useAuth } from '../router/services/auth.service'
 import { useRouter } from 'vue-router'
 
 // Stores & Router

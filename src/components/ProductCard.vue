@@ -47,9 +47,11 @@
 </template>
 
 <script setup>
+
+
 import { ref } from 'vue';
 
-const defineProps = defineProps({
+defineProps({
   product: {
     type: Object,
     required: true
