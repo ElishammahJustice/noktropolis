@@ -8,10 +8,9 @@
 
     <!-- Platform Name -->
     <v-toolbar-title class="font-weight-bold">
-  <router-link to="/" class="site-logo">
-    NOK<span class="text-accent">TRO</span>POLIS
-  </router-link>
-</v-toolbar-title>
+      <router-link to="/" class="site-logo"> NOK<span class="text-accent">TRO</span>POLIS </router-link>
+    </v-toolbar-title>
+
     <!-- Desktop Navigation -->
     <div class="d-none d-sm-flex ml-6">
       <v-btn variant="text" to="/">Home</v-btn>
@@ -20,14 +19,13 @@
       <v-menu open-on-hover :close-on-content-click="false">
         <template v-slot:activator="{ props }">
           <v-btn variant="text" to="/shop" v-bind="props" @click.stop>
-            <v-icon left>mdi-store</v-icon>
-            Shop
+            <v-icon left>mdi-store</v-icon> Shop
           </v-btn>
         </template>
         <v-list density="compact" class="shop-menu">
           <template v-for="(category, i) in shopCategories" :key="i">
             <!-- Category -->
-            <v-list-item :to="category.route">
+            <v-list-item :to="'/shop/' + category.route">
               <template v-slot:prepend>
                 <v-icon>{{ category.icon }}</v-icon>
               </template>
@@ -90,9 +88,13 @@
         </template>
 
         <template v-else>
-          <v-list-item v-for="(item, index) in authMenuItems" :key="index" @click="item.action">
-            <v-icon class="mr-2">{{ item.icon }}</v-icon>
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
+          <v-list-item to="/dashboard">
+            <v-icon class="mr-2">mdi-account</v-icon>
+            <v-list-item-title>Profile</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="handleLogout">
+            <v-icon class="mr-2">mdi-logout</v-icon>
+            <v-list-item-title>Logout</v-list-item-title>
           </v-list-item>
         </template>
       </v-list>
@@ -111,13 +113,28 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useCartStore } from '@/stores/cart';
+import { ref } from 'vue'
+import { useCartStore } from '../stores/cart'; 
+import { useAuth } from '@/services/auth.service'
+import { useRouter } from 'vue-router'
 
-const cartStore = useCartStore();
-const drawer = ref(false);
-const isAuthenticated = ref(false);
-const searchQuery = ref('');
+// Stores & Router
+const cartStore = useCartStore()
+const router = useRouter()
+const { isAuthenticated, logout } = useAuth()
+
+const drawer = ref(false)
+const searchQuery = ref('')
+
+// Handle Logout
+const handleLogout = async () => {
+  try {
+    await logout()
+    router.push('/') // Redirect to home after logout
+  } catch (error) {
+    console.error('Logout failed:', error)
+  }
+}
 
 // Navigation Drawer Items
 const navDrawerItems = [
@@ -127,18 +144,13 @@ const navDrawerItems = [
   { title: 'Blog', icon: 'mdi-newspaper', route: '/blog' },
   { title: 'About Us', icon: 'mdi-information', route: '/about' },
   { title: 'Contact Us', icon: 'mdi-email', route: '/contact' },
-];
+]
 
 // Account Menu Items
 const guestMenuItems = [
   { title: 'Login', icon: 'mdi-login', route: '/login' },
   { title: 'Sign Up', icon: 'mdi-account-plus', route: '/signup' },
-];
-
-const authMenuItems = [
-  { title: 'Profile', icon: 'mdi-account', action: () => console.log('Profile clicked') },
-  { title: 'Logout', icon: 'mdi-logout', action: () => console.log('Logout clicked') },
-];
+]
 
 // Shop Categories with Subcategories
 const shopCategories = [
@@ -161,7 +173,7 @@ const shopCategories = [
       { title: 'Head Wraps', slug: 'head-wraps' },
     ],
   },
-];
+]
 </script>
 
 <style scoped>
@@ -194,8 +206,8 @@ const shopCategories = [
   color: white;
 }
 .site-logo {
-  text-decoration: none; /* Remove underline */
-  color: inherit; /* Inherit color from parent */
-  font-weight: bold; /* Ensure it keeps the bold look */
+  text-decoration: none;
+  color: inherit;
+  font-weight: bold;
 }
 </style>

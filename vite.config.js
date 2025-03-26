@@ -6,13 +6,9 @@ import vue from '@vitejs/plugin-vue'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [
-    vue(),
-
-  ],
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
-    },
-  },
-})
+  plugins: [vue()],
+  server: {
+    port: 5173, // Set a fixed port
+    host: 'localhost', // Ensure it's always accessible on localhost
+  }
+});

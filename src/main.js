@@ -1,31 +1,26 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import App from './App.vue';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import router from './router';
 
 // Vuetify
 import 'vuetify/styles';
 import { createVuetify } from 'vuetify';
-import * as components from 'vuetify/components';
-import * as directives from 'vuetify/directives';
+import { VBtn, VCard, VContainer, VRow, VCol, VTextField, VForm, VToolbar, VToolbarTitle, VAlert } from 'vuetify/components';
+import { Ripple } from 'vuetify/directives';
 import '@mdi/font/css/materialdesignicons.css';
 
-// Create the app
-const app = createApp(App);
-const pinia = createPinia();
-
-// Initialize Vuetify
+// Initialize Vuetify with only used components and directives
 const vuetify = createVuetify({
-  components,
-  directives,
+  components: { VBtn, VCard, VContainer, VRow, VCol, VTextField, VForm, VToolbar, VToolbarTitle, VAlert },
+  directives: { Ripple }
 });
 
-// Use plugins
-app.use(createPinia())
-app.use(router)
-app.use(vuetify)
-app.use(pinia)
-app.component('font-awesome-icon', FontAwesomeIcon)
-// Mount the app
-app.mount('#app')
+// Create Vue app
+const app = createApp(App);
+app.use(createPinia());
+app.use(router);
+app.use(vuetify);
+app.component('font-awesome-icon', FontAwesomeIcon);
+app.mount('#app');

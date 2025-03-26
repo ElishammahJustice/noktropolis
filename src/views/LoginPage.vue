@@ -2,55 +2,64 @@
   <v-container class="fill-height" fluid>
     <v-row align="center" justify="center">
       <v-col cols="12" sm="8" md="6" lg="4">
-        <!-- Login Card -->
         <v-card class="elevation-12">
-          <!-- Card Header -->
           <v-toolbar color="brown-darken-2" dark flat>
             <v-toolbar-title>Welcome to Noktropolis</v-toolbar-title>
           </v-toolbar>
 
-          <!-- Card Content -->
           <v-card-text>
             <v-form @submit.prevent="handleLogin">
-              <!-- Email Input -->
+              <v-alert v-if="errorMessage" type="error" dense>{{ errorMessage }}</v-alert>
+
               <v-text-field
                 v-model="email"
                 label="Email"
                 prepend-icon="mdi-email"
                 type="email"
-                required
                 :rules="[rules.required, rules.email]"
                 outlined
                 class="mb-4"
+                :disabled="loading"
               ></v-text-field>
 
-              <!-- Password Input -->
               <v-text-field
                 v-model="password"
                 label="Password"
                 prepend-icon="mdi-lock"
-                type="password"
-                required
+                :type="showPassword ? 'text' : 'password'"
+                :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
+                @click:append="showPassword = !showPassword"
                 :rules="[rules.required]"
                 outlined
                 class="mb-4"
+                :disabled="loading"
               ></v-text-field>
 
-              <!-- Login Button -->
+              <v-checkbox v-model="rememberMe" label="Remember Me" color="brown-darken-2"></v-checkbox>
+
               <v-btn
-                class="login-button"
                 type="submit"
                 color="brown-darken-2"
                 block
                 large
                 :loading="loading"
+                :disabled="loading"
               >
                 Login
+              </v-btn>
+
+              <v-divider class="my-4"></v-divider>
+
+              <v-btn block outlined color="blue-darken-2" @click="loginWithGoogle">
+                <v-icon left>mdi-google</v-icon> Continue with Google
+              </v-btn>
+
+              <v-btn block outlined color="blue-darken-4" class="mt-2" @click="loginWithFacebook">
+                <v-icon left>mdi-facebook</v-icon> Continue with Facebook
               </v-btn>
             </v-form>
           </v-card-text>
 
-          <!-- Card Footer -->
           <v-card-actions class="pa-4">
             <v-spacer></v-spacer>
             <span>Don't have an account?</span>
@@ -63,9 +72,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuth } from '../router/services/auth.service'
+import { useAuth } from '@/services/auth.service' // ✅ Ensure correct import path
 
 const router = useRouter()
 const { login, loading } = useAuth()
@@ -73,140 +82,99 @@ const { login, loading } = useAuth()
 // Form fields
 const email = ref('')
 const password = ref('')
+const errorMessage = ref('')
+const showPassword = ref(false)
+const rememberMe = ref(false)
 
 const rules = {
   required: (value) => !!value || 'This field is required.',
   email: (value) => {
-    const pattern =
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     return pattern.test(value) || 'Invalid email.'
   },
 }
 
+// Load saved email if "Remember Me" was checked
+onMounted(() => {
+  const savedEmail = localStorage.getItem('savedEmail')
+  if (savedEmail) {
+    email.value = savedEmail
+    rememberMe.value = true
+  }
+})
+
 async function handleLogin() {
   if (!email.value || !password.value) {
-    console.error('Email and password are required')
+    errorMessage.value = "Please enter email and password."
     return
   }
 
   try {
-    await login({
+    const response = await login({
       email: email.value,
       password: password.value,
     })
-    alert('Login successful! Redirecting...')
-    router.push({ name: 'home' }) // Redirect to home page
-    // setTimeout(() => {
-    //   this.loading = false
-    //   alert('We are here So far!!!')
-    //   router.push({ name: 'home' }) // Redirect to home page
-    // }, 1500)
+
+    if (response && response.token) {
+      // ✅ Store authentication details securely
+      sessionStorage.setItem('authToken', response.token)
+      sessionStorage.setItem('userRole', response.user.role)
+
+      // ✅ Remember Me functionality
+      if (rememberMe.value) {
+        localStorage.setItem('savedEmail', email.value)
+      } else {
+        localStorage.removeItem('savedEmail')
+      }
+
+      // ✅ Redirect based on role
+      switch (response.user.role) {
+        case 'admin':
+          router.push({ name: 'AdminDashboard' })
+          break
+        case 'vendor':
+          router.push({ name: 'VendorDashboard' })
+          break
+        default:
+          router.push({ name: 'UserDashboard' })
+      }
+    } else {
+      errorMessage.value = "Invalid login response."
+    }
   } catch (err) {
-    console.error('Login failed', err)
+    const status = err.response?.status
+    if (status === 401) {
+      errorMessage.value = "Invalid email or password."
+    } else if (status === 403) {
+      errorMessage.value = "Your account is suspended. Please contact support."
+    } else {
+      errorMessage.value = err.response?.data?.message || "Login failed. Please try again."
+    }
   }
+}
+
+// Google Login (Placeholder)
+function loginWithGoogle() {
+  console.log("Google Login Clicked!")
+  // Future: Integrate Firebase or OAuth API
+}
+
+// Facebook Login (Placeholder)
+function loginWithFacebook() {
+  console.log("Facebook Login Clicked!")
+  // Future: Integrate Facebook OAuth
 }
 
 function goToSignup() {
   router.push({ name: 'Signup' })
 }
 </script>
-<!-- <script>
-export default {
-  data() {
-    return {
-      email: "",
-      password: "",
-      loading: false,
-      rules: {
-        required: (value) => !!value || "This field is required.",
-        email: (value) => {
-          const pattern =
-            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-          return pattern.test(value) || "Invalid email.";
-        },
-      },
-    };
-  },
-  mounted() {
-    console.log('LoginPage component mounted');
-  },
-  methods: {
-    async handleLogin() {
-      if (!this.email || !this.password) {
-        alert("Please fill in all required fields.");
-        return;
-      }
-
-      // Simulate login process
-      this.loading = true;
-
-      await
-
-      setTimeout(() => {
-        this.loading = false;
-        alert("Login successful! Redirecting...");
-        this.$router.push({ name: "Home" }); // Redirect to home page
-      }, 1500);
-    },
-    goToSignup() {
-      this.$router.push({ name: "Signup" }); // Redirect to signup page
-    },
-  },
-};
-</script> -->
 
 <style scoped>
 .fill-height {
   min-height: 100vh;
 }
-
 .v-card {
   border-radius: 10px;
-}
-
-.v-btn--block {
-  margin-top: 20px;
-}
-.login-button {
-  background: transparent;
-  color: burlywood;
-  font-size: 17px;
-  text-transform: uppercase;
-  font-weight: 600;
-  border: none;
-  padding: 20px 30px;
-  cursor: pointer;
-  perspective: 30rem;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.308);
-}
-
-.login-button::before {
-  content: '';
-  display: block;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  border-radius: 10px;
-  background: linear-gradient(320deg, rgba(255, 179, 0, 0.678), rgba(128, 70, 0, 0.308));
-  z-index: 1;
-  transition: background 3s;
-}
-
-.login-button:hover::before {
-  animation: rotate 1s;
-  transition: all 0.5s;
-}
-
-@keyframes rotate {
-  0% {
-    transform: rotateY(180deg);
-  }
-
-  100% {
-    transform: rotateY(360deg);
-  }
 }
 </style>

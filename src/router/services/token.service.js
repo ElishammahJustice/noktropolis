@@ -1,38 +1,43 @@
-import router from '../index'
-import api from '../services/api'
+import router from '../index';
+import api from '../services/api';
 
 class TokenService {
   setToken(token) {
-    localStorage.setItem('authToken', token)
+    localStorage.setItem('authToken', token);
   }
 
   setUser(user) {
-    localStorage.setItem('user', user)
+    localStorage.setItem('user', JSON.stringify(user)); // Store user object as JSON
   }
 
   getToken() {
-    const token = localStorage.getItem('authToken')
-    console.log('This is my Token --->>', token)
-    return token
+    return localStorage.getItem('authToken');
   }
+
+  getUser() {
+    const user = localStorage.getItem('user');
+    return user ? JSON.parse(user) : null; // Parse JSON safely
+  }
+
   removeToken() {
-    localStorage.removeItem('authToken')
-    router.push('/login')
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('user'); // Also remove user data
+    router.push('/login');
   }
 
   isAuthenticated() {
-    return !!this.getToken()
+    return !!this.getToken(); // Returns true if token exists
   }
 
   async userInfo() {
     try {
-      const response = await api.get('me')
-      localStorage.setItem('user', response.data.name)
+      const response = await api.get('/user/profile'); // Fixed API route
+      this.setUser(response.data);
     } catch (error) {
-      console.error('No Authenticated User Was Found', error)
+      console.error('No Authenticated User Found:', error);
     }
   }
 }
 
-const myTokenInstance = new TokenService()
-export default myTokenInstance
+// Export a singleton instance
+export default new TokenService();
