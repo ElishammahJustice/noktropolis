@@ -22,6 +22,7 @@ import MessagesandSupport from '../views/User/MessagesandSupport.vue'
 import OrderHistory from '../views/User/OrderHistory.vue'
 import ReviewsandRatings from '../views/User/ReviewsandRatings.vue'
 import WishList from '../views/User/WishList.vue'
+
 // Vendor Pages (Only Accessible by Vendors)
 import VendorDashboard from '../views/Vendor/VendorDashboard.vue'
 import AddProduct from '../views/Vendor/AddProducts.vue'
@@ -30,6 +31,7 @@ import ManageOrder from '../views/Vendor/ManageOrder.vue'
 import ReviewandRating from '../views/Vendor/ReviewandRating.vue'
 import StoreSetttings from '../views/Vendor/StoreSetttings.vue'
 import VendorManageProducts from '../views/Vendor/VendorManageProducts.vue'
+
 // Admin Pages (Only Accessible by Admin)
 import AdminDashboard from '@/views/Admin/AdminDashboard.vue'
 import EarningsandTransactions from '@/views/Admin/EarningsandTransactions.vue'
@@ -39,8 +41,6 @@ import ReviewsandReports from '@/views/Admin/ReviewsandReports.vue'
 import SiteSettings from '@/views/Admin/SiteSettings.vue'
 import UserManagement from '@/views/Admin/UserManagement.vue'
 import VendorManagement from '@/views/Admin/VendorManagement.vue'
-
-
 
 const routes = [
   // Public Routes
@@ -58,32 +58,43 @@ const routes = [
   { path: '/payment', name: 'Payment', component: PaymentPage, meta: { requiresAuth: true } },
 
   // User Dashboard Routes (Customers)
-  { path: '/User', name: 'UserDashboard', component: UserDashboard, meta: { requiresAuth: true, role: 'Customer' } },
-  { path: '/User', name: 'AccountSettings', component: AccountSettings, meta: { requiresAuth: true, role: 'Customer' } },
-  { path: '/User', name: 'MessagesandSupport', component: MessagesandSupport, meta: { requiresAuth: true, role: 'Customer' } },
-  { path: '/User', name: 'OrderHistory', component: OrderHistory, meta:  { requiresAuth: true, role: 'Customer' } },
-  { path: '/User', name: 'ReviewsandRatings', component: ReviewsandRatings, meta: { requiresAuth: true, role: 'Customer' } },
-  { path: '/User', name: 'WishList', component: WishList, meta:  { requiresAuth: true, role: 'Customer' } },
+  {
+    path: '/user', component: UserDashboard, meta: { requiresAuth: true, role: 'Customer' },
+    children: [
+      { path: 'settings', name: 'AccountSettings', component: AccountSettings },
+      { path: 'messages', name: 'MessagesandSupport', component: MessagesandSupport },
+      { path: 'orders', name: 'OrderHistory', component: OrderHistory },
+      { path: 'reviews', name: 'ReviewsandRatings', component: ReviewsandRatings },
+      { path: 'wishlist', name: 'WishList', component: WishList },
+    ]
+  },
 
   // Vendor Dashboard Routes (Only for Vendors)
-  { path: '/Vendor', name: 'VendorDashboard', component: VendorDashboard, meta: { requiresAuth: true, role: 'Vendor' } },
-  { path: '/Vendor', name: 'AddProducts', component: AddProduct, meta: { requiresAuth: true, role: 'Vendor' } },
-  { path: '/Vendor', name: 'EarningsandPayout', component: EarningsandPayout, meta: { requiresAuth: true, role: 'Vendor' } },
-  { path: '/Vendor', name: 'ManageOrder', component: ManageOrder, meta: { requiresAuth: true, role: 'Vendor' } },
-  { path: '/Vendor', name: 'ReviewandRating', component: ReviewandRating, meta: { requiresAuth: true, role: 'Vendor' } },
-  { path: '/Vendor', name: 'StoreSettings', component: StoreSetttings, meta: { requiresAuth: true, role: 'Vendor' } },
-  { path: '/Vendor', name: 'VendorManageProducts', component: VendorManageProducts, meta: { requiresAuth: true, role: 'Vendor' } },
-
+  {
+    path: '/vendor', component: VendorDashboard, meta: { requiresAuth: true, role: 'Vendor' },
+    children: [
+      { path: 'add-product', name: 'AddProducts', component: AddProduct },
+      { path: 'earnings', name: 'EarningsandPayout', component: EarningsandPayout },
+      { path: 'orders', name: 'ManageOrder', component: ManageOrder },
+      { path: 'reviews', name: 'ReviewandRating', component: ReviewandRating },
+      { path: 'store-settings', name: 'StoreSettings', component: StoreSetttings },
+      { path: 'manage-products', name: 'VendorManageProducts', component: VendorManageProducts },
+    ]
+  },
 
   // Admin Dashboard Routes
-  { path: '/Admin/', name: 'AdminDashboard', component: AdminDashboard, meta: { requiresAuth: true, role: 'Admin' } },
-  { path: '/Admin/', name: 'EarningsandTransactions', component: EarningsandTransactions, meta: { requiresAuth: true, role: 'Admin' } },
-  { path: '/Admin/', name: 'OrderManagement', component: OrderManagement, meta: { requiresAuth: true, role: 'Admin' } },
-  { path: '/Admin/', name: 'ProductManagement', component: ProductManagement, meta: { requiresAuth: true, role: 'Admin' } },
-  { path: '/Admin/', name: 'ReviewsandReports', component: ReviewsandReports, meta: { requiresAuth: true, role: 'Admin' } },
-  { path: '/Admin/', name: 'SiteSettings', component: SiteSettings, meta: { requiresAuth: true, role: 'Admin' } },
-  { path: '/Admin/', name: 'UserManagement', component: UserManagement, meta: { requiresAuth: true, role: 'Admin' } },
-  { path: '/Admin/', name: 'VendorManagement', component: VendorManagement, meta: { requiresAuth: true, role: 'Admin' } },
+  {
+    path: '/admin', component: AdminDashboard, meta: { requiresAuth: true, role: 'Admin' },
+    children: [
+      { path: 'earnings', name: 'EarningsandTransactions', component: EarningsandTransactions },
+      { path: 'orders', name: 'OrderManagement', component: OrderManagement },
+      { path: 'products', name: 'ProductManagement', component: ProductManagement },
+      { path: 'reviews', name: 'ReviewsandReports', component: ReviewsandReports },
+      { path: 'settings', name: 'SiteSettings', component: SiteSettings },
+      { path: 'users', name: 'UserManagement', component: UserManagement },
+      { path: 'vendors', name: 'VendorManagement', component: VendorManagement },
+    ]
+  },
 ];
 
 const router = createRouter({
