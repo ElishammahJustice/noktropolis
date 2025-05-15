@@ -74,12 +74,11 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuth } from '../router/services/auth.service.js' // ✅ Ensure correct import path
+import { useAuth } from '../router/services/auth.service.js'
 
 const router = useRouter()
 const { login, loading } = useAuth()
 
-// Form fields
 const email = ref('')
 const password = ref('')
 const errorMessage = ref('')
@@ -94,7 +93,6 @@ const rules = {
   },
 }
 
-// Load saved email if "Remember Me" was checked
 onMounted(() => {
   const savedEmail = localStorage.getItem('savedEmail')
   if (savedEmail) {
@@ -115,20 +113,21 @@ async function handleLogin() {
       password: password.value,
     })
 
-    if (response && response.token) {
-      // ✅ Store authentication details securely
-      sessionStorage.setItem('authToken', response.token)
-      sessionStorage.setItem('userRole', response.user.role)
+    if (response && response.data && response.data.token) {
+      const { token, user } = response.data
 
-      // ✅ Remember Me functionality
+      // Save token and role
+      localStorage.setItem('authToken', token)
+      localStorage.setItem('userRole', user.role.slug)
+
       if (rememberMe.value) {
         localStorage.setItem('savedEmail', email.value)
       } else {
         localStorage.removeItem('savedEmail')
       }
 
-      // ✅ Redirect based on role
-      switch (response.user.role) {
+      // Redirect based on role
+      switch (user.role.slug) {
         case 'admin':
           router.push({ name: 'AdminDashboard' })
           break
@@ -146,23 +145,19 @@ async function handleLogin() {
     if (status === 401) {
       errorMessage.value = "Invalid email or password."
     } else if (status === 403) {
-      errorMessage.value = "Your account is suspended. Please contact support."
+      errorMessage.value = "Your account is suspended or not approved."
     } else {
       errorMessage.value = err.response?.data?.message || "Login failed. Please try again."
     }
   }
 }
 
-// Google Login (Placeholder)
 function loginWithGoogle() {
   console.log("Google Login Clicked!")
-  // Future: Integrate Firebase or OAuth API
 }
 
-// Facebook Login (Placeholder)
 function loginWithFacebook() {
   console.log("Facebook Login Clicked!")
-  // Future: Integrate Facebook OAuth
 }
 
 function goToSignup() {

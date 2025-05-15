@@ -80,12 +80,15 @@
       </template>
 
       <v-list density="compact">
-        <template v-if="!isAuthenticated">
-          <v-list-item v-for="(item, index) in guestMenuItems" :key="index" :to="item.route">
-            <v-icon class="mr-2">{{ item.icon }}</v-icon>
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
-          </v-list-item>
-        </template>
+       <template v-if="!isAuthenticated">
+  <router-link v-for="(item, index) in guestMenuItems" :key="index" :to="item.route">
+    <v-list-item>
+      <v-icon class="mr-2">{{ item.icon }}</v-icon>
+      <v-list-item-title>{{ item.title }}</v-list-item-title>
+    </v-list-item>
+  </router-link>
+</template>
+
 
         <template v-else>
           <v-list-item to="/dashboard">

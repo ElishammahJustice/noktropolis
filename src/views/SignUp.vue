@@ -100,7 +100,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref,  } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '../router/services/auth.service.js'
 
@@ -125,9 +125,7 @@ const rules = {
   required: (value) => !!value || 'This field is required.',
   email: (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || 'Invalid email.',
   minLength: (value) => value.length >= 8 || 'Password must be at least 8 characters.',
-  confirmPassword: computed(() => (value) =>
-    value === password.value || 'Passwords do not match.'
-  ),
+  confirmPassword: (value) => value === password.value || 'Passwords do not match.',
 }
 
 async function handleSignup() {
@@ -146,11 +144,12 @@ async function handleSignup() {
 
   try {
     const response = await register({
-      name: fullName.value,
-      email: email.value,
-      password: password.value,
-      role: role.value.toLowerCase(), // Ensuring consistent role value (e.g., 'customer' or 'vendor')
-    });
+  name: fullName.value,
+  email: email.value,
+  password: password.value,
+  password_confirmation: confirmPassword.value, // ✅ Required for Laravel validation
+  role: role.value.toLowerCase(),
+});
 
     console.log(response.data); // ✅ Log response data
 

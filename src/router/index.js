@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuth } from '../router/services/auth.service' // Import authentication service
+import { useAuth } from '../router/services/auth.service'
 
-// General Public Pages
+// Public Pages
 import Home from '../views/HomePage.vue'
 import AboutUs from '../views/AboutUs.vue'
 import ShopPage from '../views/shop/IndexPage.vue'
@@ -15,7 +15,7 @@ import CartPage from '../views/CartPage.vue'
 import CheckoutPage from '../views/shop/CheckoutPage.vue'
 import PaymentPage from '../views/shop/PaymentPage.vue'
 
-// User Dashboard (for authenticated customers)
+// User Dashboard (Customers)
 import UserDashboard from '../views/User/UserDashboard.vue'
 import AccountSettings from '../views/User/AccountSettings.vue'
 import MessagesandSupport from '../views/User/MessagesandSupport.vue'
@@ -23,7 +23,7 @@ import OrderHistory from '../views/User/OrderHistory.vue'
 import ReviewsandRatings from '../views/User/ReviewsandRatings.vue'
 import WishList from '../views/User/WishList.vue'
 
-// Vendor Pages (Only Accessible by Vendors)
+// Vendor Dashboard
 import VendorDashboard from '../views/Vendor/VendorDashboard.vue'
 import AddProduct from '../views/Vendor/AddProducts.vue'
 import EarningsandPayout from '../views/Vendor/EarningsandPayout.vue'
@@ -32,96 +32,103 @@ import ReviewandRating from '../views/Vendor/ReviewandRating.vue'
 import StoreSetttings from '../views/Vendor/StoreSetttings.vue'
 import VendorManageProducts from '../views/Vendor/VendorManageProducts.vue'
 
-// Admin Pages (Only Accessible by Admin)
-import AdminDashboard from '@/views/Admin/AdminDashboard.vue'
-import EarningsandTransactions from '@/views/Admin/EarningsandTransactions.vue'
-import OrderManagement from '@/views/Admin/OrderManagement.vue'
-import ProductManagement from '@/views/Admin/ProductManagement.vue'
-import ReviewsandReports from '@/views/Admin/ReviewsandReports.vue'
-import SiteSettings from '@/views/Admin/SiteSettings.vue'
-import UserManagement from '@/views/Admin/UserManagement.vue'
-import VendorManagement from '@/views/Admin/VendorManagement.vue'
+// Admin Dashboard
+import AdminDashboard from '../views/Admin/AdminDashboard.vue'
+import EarningsandTransactions from '../views/Admin/EarningsandTransactions.vue'
+import OrderManagement from '../views/Admin/OrderManagement.vue'
+import ProductManagement from '../views/Admin/ProductManagement.vue'
+import ReviewsandReports from '../views/Admin/ReviewsandReports.vue'
+import SiteSettings from '../views/Admin/SiteSettings.vue'
+import UserManagement from '../views/Admin/UserManagement.vue'
+import VendorManagement from '../views/Admin/VendorManagement.vue'
 
 const routes = [
-  // Public Routes
-  { path: '/', name: 'home', component: Home },
-  { path: '/about', name: 'about', component: AboutUs },
-  { path: '/shop', name: 'Shop', component: ShopPage },
-  { path: '/shop/:category', name: 'Category', component: CategoryPage, props: true },
-  { path: '/shop/:category/:subcategory', name: 'Subcategory', component: SubcategoryPage, props: true },
-  { path: '/afrohub', name: 'AfroHub', component: AfroHub },
-  { path: '/blog', name: 'Blog', component: BlogPage },
-  { path: '/signup', name: 'Signup', component: SignUp, meta: { requiresGuest: true } },
-  { path: '/login', name: 'Login', component: LoginPage, meta: { requiresGuest: true } },
-  { path: '/cart', name: 'Cart', component: CartPage },
-  { path: '/checkout', name: 'Checkout', component: CheckoutPage, meta: { requiresAuth: true } },
-  { path: '/payment', name: 'Payment', component: PaymentPage, meta: { requiresAuth: true } },
+  // Public
+  { path: '/',       name: 'home',  component: Home },
+  { path: '/about',  name: 'about', component: AboutUs },
+  { path: '/shop',   name: 'shop',  component: ShopPage },
+  { path: '/shop/:category',                name: 'category',   component: CategoryPage,   props: true },
+  { path: '/shop/:category/:subcategory',   name: 'subcategory',component: SubcategoryPage,props: true },
+  { path: '/afrohub', name: 'afrohub', component: AfroHub },
+  { path: '/blog',    name: 'blog',    component: BlogPage },
 
-  // User Dashboard Routes (Customers)
+  { path: '/signup', name: 'signup', component: SignUp, meta: { requiresGuest: true } },
+  { path: '/login',  name: 'login',  component: LoginPage, meta: { requiresGuest: true } },
+
+  { path: '/cart',    name: 'cart',     component: CartPage },
+  { path: '/checkout', name: 'checkout', component: CheckoutPage, meta: { requiresAuth: true,  ability: 'checkout' } },
+  { path: '/payment',  name: 'payment',  component: PaymentPage,  meta: { requiresAuth: true,  ability: 'checkout' } },
+
+  // User Dashboard
   {
-    path: '/user', component: UserDashboard, meta: { requiresAuth: true, role: 'Customer' },
+    path: '/user',
+    component: UserDashboard,
+    meta: { requiresAuth: true, ability: 'view_user_dashboard' },
     children: [
-      { path: 'settings', name: 'AccountSettings', component: AccountSettings },
-      { path: 'messages', name: 'MessagesandSupport', component: MessagesandSupport },
-      { path: 'orders', name: 'OrderHistory', component: OrderHistory },
-      { path: 'reviews', name: 'ReviewsandRatings', component: ReviewsandRatings },
-      { path: 'wishlist', name: 'WishList', component: WishList },
+      { path: 'settings', name: 'account-settings', component: AccountSettings, meta: { ability: 'update_account_settings' } },
+      { path: 'support',  name: 'messages-support',  component: MessagesandSupport, meta: { ability: 'send_messages' } },
+      { path: 'orders',   name: 'order-history',     component: OrderHistory,       meta: { ability: 'view_own_orders' } },
+      { path: 'reviews',  name: 'reviews-ratings',    component: ReviewsandRatings,  meta: { ability: 'write_reviews' } },
+      { path: 'wishlist', name: 'wishlist',          component: WishList,           meta: { ability: 'manage_wishlist' } },
     ]
   },
 
-  // Vendor Dashboard Routes (Only for Vendors)
+  // Vendor Dashboard
   {
-    path: '/vendor', component: VendorDashboard, meta: { requiresAuth: true, role: 'Vendor' },
+    path: '/vendor',
+    component: VendorDashboard,
+    meta: { requiresAuth: true, ability: 'view_vendor_dashboard' },
     children: [
-      { path: 'add-product', name: 'AddProducts', component: AddProduct },
-      { path: 'earnings', name: 'EarningsandPayout', component: EarningsandPayout },
-      { path: 'orders', name: 'ManageOrder', component: ManageOrder },
-      { path: 'reviews', name: 'ReviewandRating', component: ReviewandRating },
-      { path: 'store-settings', name: 'StoreSettings', component: StoreSetttings },
-      { path: 'manage-products', name: 'VendorManageProducts', component: VendorManageProducts },
+      { path: 'add-product',    name: 'add-product',     component: AddProduct,         meta: { ability: 'add_product' } },
+      { path: 'products',       name: 'manage-products', component: VendorManageProducts,meta: { ability: 'view_own_products' } },
+      { path: 'orders',         name: 'manage-order',    component: ManageOrder,        meta: { ability: 'view_vendor_orders' } },
+      { path: 'earnings',       name: 'earnings-payout', component: EarningsandPayout,  meta: { ability: 'view_earnings' } },
+      { path: 'reviews',        name: 'vendor-reviews',  component: ReviewandRating,    meta: { ability: 'view_reviews' } },
+      { path: 'store-settings', name: 'store-settings',  component: StoreSetttings,     meta: { ability: 'edit_store_settings' } },
     ]
   },
 
-  // Admin Dashboard Routes
+  // Admin Dashboard
   {
-    path: '/admin', component: AdminDashboard, meta: { requiresAuth: true, role: 'Admin' },
+    path: '/admin',
+    component: AdminDashboard,
+    meta: { requiresAuth: true, ability: 'view_admin_dashboard' },
     children: [
-      { path: 'earnings', name: 'EarningsandTransactions', component: EarningsandTransactions },
-      { path: 'orders', name: 'OrderManagement', component: OrderManagement },
-      { path: 'products', name: 'ProductManagement', component: ProductManagement },
-      { path: 'reviews', name: 'ReviewsandReports', component: ReviewsandReports },
-      { path: 'settings', name: 'SiteSettings', component: SiteSettings },
-      { path: 'users', name: 'UserManagement', component: UserManagement },
-      { path: 'vendors', name: 'VendorManagement', component: VendorManagement },
+      { path: 'earnings', name: 'earnings-transactions', component: EarningsandTransactions, meta: { ability: 'manage_earnings' } },
+      { path: 'orders',   name: 'order-management',      component: OrderManagement,        meta: { ability: 'manage_orders' } },
+      { path: 'products', name: 'product-management',    component: ProductManagement,      meta: { ability: 'manage_products' } },
+      { path: 'reviews',  name: 'reviews-reports',       component: ReviewsandReports,      meta: { ability: 'manage_reviews' } },
+      { path: 'settings', name: 'site-settings',         component: SiteSettings,           meta: { ability: 'manage_site_settings' } },
+      { path: 'users',    name: 'user-management',       component: UserManagement,         meta: { ability: 'manage_users' } },
+      { path: 'vendors',  name: 'vendor-management',     component: VendorManagement,       meta: { ability: 'manage_vendors' } },
     ]
   },
-];
+]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
-});
+})
 
 // Global Navigation Guard
 router.beforeEach((to, from, next) => {
-  const { isAuthenticated, userRole } = useAuth();
+  const auth = useAuth()
 
-  // If route requires authentication but user is not logged in, redirect to Login
+  const { isAuthenticated, hasAbility } = auth // Now we get these from the returned value of useAuth()
+
   if (to.meta.requiresAuth && !isAuthenticated.value) {
-    return next({ name: 'Login' });
+    return next({ name: 'login' })
   }
 
-  // Prevent authenticated users from visiting Signup/Login pages
   if (to.meta.requiresGuest && isAuthenticated.value) {
-    return next({ name: 'home' });
+    return next({ name: 'home' })
   }
 
-  // Role-based access: If route requires a specific role and userRole doesn't match, redirect to home
-  if (to.meta.role && userRole.value !== to.meta.role) {
-    return next({ name: 'home' });
+  if (to.meta.ability && !hasAbility(to.meta.ability)) {
+    return next({ name: 'home' })
   }
 
-  next();
-});
+  next()
+})
 
-export default router;
+export default router

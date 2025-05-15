@@ -1,101 +1,106 @@
-import { ref, computed } from 'vue'
-import TokenService from './token.service'
-import api from './api'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import api from '../services/api'
+import TokenService from '../services/token.service'
 
-// ✅ Global state
 const user = ref(null)
 const loading = ref(false)
 const error = ref(null)
 
-// ✅ Load user info (Define function before calling it)
-async function loadUserInfo() {
+const router = useRouter()
+
+const fetchUser = async () => {
+  try {
+    const response = await api.get('/user')
+    user.value = response.data?.data || response.data
+  } catch (err) {
+    console.error('Failed to fetch user:', err)
+    user.value = null
+  }
+}
+
+const redirectToDashboard = () => {
+  const userAbilities = user.value?.abilities || []
+
+  if (userAbilities.includes('access_admin_dashboard')) {
+    router.push('/admin/dashboard')
+  } else if (userAbilities.includes('access_vendor_dashboard')) {
+    router.push('/vendor/dashboard')
+  } else if (userAbilities.includes('access_user_dashboard')) {
+    router.push('/dashboard')
+  } else {
+    router.push('/') // fallback
+  }
+}
+
+const login = async (credentials) => {
   loading.value = true
   error.value = null
 
   try {
-    if (TokenService.isAuthenticated()) {
-      const response = await api.get('me')
+    const response = await api.post('/login', credentials)
 
-      if (response.data.user) {
-        user.value = response.data.user
-        TokenService.setUser(response.data.user)
-      } else {
-        throw new Error('Invalid user data')
-      }
-    }
+    const token = response.data?.token ?? response.data?.data?.token
+    if (!token) throw new Error('Invalid response from server.')
+
+    TokenService.saveToken(token)
+
+    await fetchUser()
+
+    redirectToDashboard()
+
   } catch (err) {
-    console.error('Error loading user info:', err)  // ✅ Fix: Log the error
-    error.value = 'Failed to load user info'
-    TokenService.removeToken()
+    error.value = err.response?.data?.message || err.message || 'Login failed.'
+    throw err
   } finally {
     loading.value = false
   }
 }
 
-// ✅ Call loadUserInfo AFTER defining it
-if (TokenService.isAuthenticated()) {
-  loadUserInfo()
+const register = async (form) => {
+  loading.value = true
+  error.value = null
+
+  try {
+    const response = await api.post('/register', form)
+
+    const token = response.data?.token ?? response.data?.data?.token
+    if (!token) throw new Error('Invalid response from server.')
+
+    TokenService.saveToken(token)
+
+    await fetchUser()
+
+    redirectToDashboard()
+
+  } catch (err) {
+    error.value = err.response?.data?.message || err.message || 'Registration failed.'
+    throw err
+  } finally {
+    loading.value = false
+  }
 }
 
-// ✅ Export auth functions
+const logout = async () => {
+  try {
+    await api.post('/logout')
+  } catch  {
+    // silently ignore
+  } finally {
+    TokenService.removeToken()
+    user.value = null
+    router.push('/login')
+  }
+}
+
 export function useAuth() {
-  const isAuthenticated = computed(() => !!user.value)
-  const isAdmin = computed(() => user.value?.role?.slug === 'admin')
-  const currentUser = computed(() => user.value)
-
-  async function login(credentials) {
-    loading.value = true
-    error.value = null
-
-    try {
-      if (!credentials.email || !credentials.password) {
-        throw new Error('Email and password are required')
-      }
-
-      const response = await api.post('login', credentials)
-
-      if (response.data.token && response.data.user) {
-        TokenService.setToken(response.data.token)
-        TokenService.setUser(response.data.user)
-        user.value = response.data.user
-        return response
-      } else {
-        throw new Error('Invalid response format from server')
-      }
-    } catch (err) {
-      console.error('Login error:', err) // ✅ Fix: Log the error
-      error.value = err.response?.data?.message || 'Login failed'
-      throw err
-    } finally {
-      loading.value = false
-    }
-  }
-
-  async function logout() {
-    loading.value = true
-    error.value = null
-
-    try {
-      TokenService.removeToken()
-      user.value = null
-      await api.get('logout')
-    } catch (err) {
-      console.error('Logout error:', err)  // ✅ Fix: Log the error
-      error.value = 'Logout failed'
-    } finally {
-      loading.value = false
-    }
-  }
-
   return {
     user,
     loading,
     error,
-    isAuthenticated,
-    isAdmin,
-    currentUser,
+    fetchUser,
     login,
+    register,
     logout,
-    loadUserInfo
   }
 }
