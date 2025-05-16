@@ -107,47 +107,53 @@ async function handleLogin() {
     return
   }
 
+  errorMessage.value = ""; // Clear any previous errors
+
   try {
+    // Pass the router instance to the login function
     const response = await login({
       email: email.value,
       password: password.value,
-    })
+    }, router)
 
-    if (response && response.data && response.data.token) {
-      const { token, user } = response.data
-
-      // Save token and role
-      localStorage.setItem('authToken', token)
-      localStorage.setItem('userRole', user.role.slug)
-
-      if (rememberMe.value) {
-        localStorage.setItem('savedEmail', email.value)
-      } else {
-        localStorage.removeItem('savedEmail')
-      }
-
-      // Redirect based on role
-      switch (user.role.slug) {
-        case 'admin':
-          router.push({ name: 'AdminDashboard' })
-          break
-        case 'vendor':
-          router.push({ name: 'VendorDashboard' })
-          break
-        default:
-          router.push({ name: 'UserDashboard' })
-      }
-    } else {
-      errorMessage.value = "Invalid login response."
+    // Check if we have a valid response
+    if (!response || !response.data || !response.data.user) {
+      errorMessage.value = "Invalid response from server"
+      return;
     }
+
+    // Save extras (token already handled by TokenService)
+    const userData = response.data.user;
+
+    // Store role information
+    if (userData.role && userData.role.slug) {
+      localStorage.setItem('userRole', userData.role.slug);
+      console.log('User role stored:', userData.role.slug);
+    } else {
+      console.warn('No role information in response:', userData);
+    }
+
+    if (rememberMe.value) {
+      localStorage.setItem('savedEmail', email.value)
+    } else {
+      localStorage.removeItem('savedEmail')
+    }
+
   } catch (err) {
-    const status = err.response?.status
+    console.error('Login error:', err)
+
+    const status = err?.response?.status
+    const backendMessage = err?.response?.data?.message
+    const fallbackMessage = err?.message || 'Login failed. Please try again.'
+
     if (status === 401) {
       errorMessage.value = "Invalid email or password."
     } else if (status === 403) {
       errorMessage.value = "Your account is suspended or not approved."
+    } else if (backendMessage) {
+      errorMessage.value = backendMessage
     } else {
-      errorMessage.value = err.response?.data?.message || "Login failed. Please try again."
+      errorMessage.value = fallbackMessage
     }
   }
 }

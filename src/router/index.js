@@ -15,7 +15,7 @@ import CartPage from '../views/CartPage.vue'
 import CheckoutPage from '../views/shop/CheckoutPage.vue'
 import PaymentPage from '../views/shop/PaymentPage.vue'
 
-// User Dashboard (Customers)
+// User Dashboard
 import UserDashboard from '../views/User/UserDashboard.vue'
 import AccountSettings from '../views/User/AccountSettings.vue'
 import MessagesandSupport from '../views/User/MessagesandSupport.vue'
@@ -43,66 +43,66 @@ import UserManagement from '../views/Admin/UserManagement.vue'
 import VendorManagement from '../views/Admin/VendorManagement.vue'
 
 const routes = [
-  // Public
-  { path: '/',       name: 'home',  component: Home },
-  { path: '/about',  name: 'about', component: AboutUs },
-  { path: '/shop',   name: 'shop',  component: ShopPage },
-  { path: '/shop/:category',                name: 'category',   component: CategoryPage,   props: true },
-  { path: '/shop/:category/:subcategory',   name: 'subcategory',component: SubcategoryPage,props: true },
+  { path: '/', name: 'home', component: Home },
+  { path: '/about', name: 'about', component: AboutUs },
+  { path: '/shop', name: 'shop', component: ShopPage },
+  { path: '/shop/:category', name: 'category', component: CategoryPage, props: true },
+  { path: '/shop/:category/:subcategory', name: 'subcategory', component: SubcategoryPage, props: true },
   { path: '/afrohub', name: 'afrohub', component: AfroHub },
-  { path: '/blog',    name: 'blog',    component: BlogPage },
+  { path: '/blog', name: 'blog', component: BlogPage },
+  { path: '/signup', name: 'signup', component: SignUp },
+  { path: '/login', name: 'login', component: LoginPage },
+  { path: '/cart', name: 'cart', component: CartPage },
+  { path: '/checkout', name: 'checkout', component: CheckoutPage, meta: { requiresAuth: true, ability: 'checkout' } },
+  { path: '/payment', name: 'payment', component: PaymentPage, meta: { requiresAuth: true, ability: 'checkout' } },
 
-  { path: '/signup', name: 'signup', component: SignUp, meta: { requiresGuest: true } },
-  { path: '/login',  name: 'login',  component: LoginPage, meta: { requiresGuest: true } },
-
-  { path: '/cart',    name: 'cart',     component: CartPage },
-  { path: '/checkout', name: 'checkout', component: CheckoutPage, meta: { requiresAuth: true,  ability: 'checkout' } },
-  { path: '/payment',  name: 'payment',  component: PaymentPage,  meta: { requiresAuth: true,  ability: 'checkout' } },
-
-  // User Dashboard
+  // User Dashboard root route named 'UserDashboard' for routing to work with your auth.service.js
   {
     path: '/user',
     component: UserDashboard,
+    name: 'UserDashboard',
     meta: { requiresAuth: true, ability: 'view_user_dashboard' },
     children: [
       { path: 'settings', name: 'account-settings', component: AccountSettings, meta: { ability: 'update_account_settings' } },
-      { path: 'support',  name: 'messages-support',  component: MessagesandSupport, meta: { ability: 'send_messages' } },
-      { path: 'orders',   name: 'order-history',     component: OrderHistory,       meta: { ability: 'view_own_orders' } },
-      { path: 'reviews',  name: 'reviews-ratings',    component: ReviewsandRatings,  meta: { ability: 'write_reviews' } },
-      { path: 'wishlist', name: 'wishlist',          component: WishList,           meta: { ability: 'manage_wishlist' } },
+      { path: 'support', name: 'messages-support', component: MessagesandSupport, meta: { ability: 'send_messages' } },
+      { path: 'orders', name: 'order-history', component: OrderHistory, meta: { ability: 'view_own_orders' } },
+      { path: 'reviews', name: 'reviews-ratings', component: ReviewsandRatings, meta: { ability: 'write_reviews' } },
+      { path: 'wishlist', name: 'wishlist', component: WishList, meta: { ability: 'manage_wishlist' } },
     ]
   },
 
-  // Vendor Dashboard
+  // Vendor Dashboard root route named 'VendorDashboard'
   {
     path: '/vendor',
     component: VendorDashboard,
+    name: 'VendorDashboard',
     meta: { requiresAuth: true, ability: 'view_vendor_dashboard' },
     children: [
-      { path: 'add-product',    name: 'add-product',     component: AddProduct,         meta: { ability: 'add_product' } },
-      { path: 'products',       name: 'manage-products', component: VendorManageProducts,meta: { ability: 'view_own_products' } },
-      { path: 'orders',         name: 'manage-order',    component: ManageOrder,        meta: { ability: 'view_vendor_orders' } },
-      { path: 'earnings',       name: 'earnings-payout', component: EarningsandPayout,  meta: { ability: 'view_earnings' } },
-      { path: 'reviews',        name: 'vendor-reviews',  component: ReviewandRating,    meta: { ability: 'view_reviews' } },
-      { path: 'store-settings', name: 'store-settings',  component: StoreSetttings,     meta: { ability: 'edit_store_settings' } },
+      { path: 'add-product', name: 'add-product', component: AddProduct, meta: { ability: 'add_product' } },
+      { path: 'products', name: 'manage-products', component: VendorManageProducts, meta: { ability: 'view_own_products' } },
+      { path: 'orders', name: 'manage-order', component: ManageOrder, meta: { ability: 'view_vendor_orders' } },
+      { path: 'earnings', name: 'earnings-payout', component: EarningsandPayout, meta: { ability: 'view_earnings' } },
+      { path: 'reviews', name: 'vendor-reviews', component: ReviewandRating, meta: { ability: 'view_reviews' } },
+      { path: 'store-settings', name: 'store-settings', component: StoreSetttings, meta: { ability: 'edit_store_settings' } },
     ]
   },
 
-  // Admin Dashboard
+  // Admin Dashboard root route named 'AdminDashboard'
   {
     path: '/admin',
     component: AdminDashboard,
+    name: 'AdminDashboard',
     meta: { requiresAuth: true, ability: 'view_admin_dashboard' },
     children: [
       { path: 'earnings', name: 'earnings-transactions', component: EarningsandTransactions, meta: { ability: 'manage_earnings' } },
-      { path: 'orders',   name: 'order-management',      component: OrderManagement,        meta: { ability: 'manage_orders' } },
-      { path: 'products', name: 'product-management',    component: ProductManagement,      meta: { ability: 'manage_products' } },
-      { path: 'reviews',  name: 'reviews-reports',       component: ReviewsandReports,      meta: { ability: 'manage_reviews' } },
-      { path: 'settings', name: 'site-settings',         component: SiteSettings,           meta: { ability: 'manage_site_settings' } },
-      { path: 'users',    name: 'user-management',       component: UserManagement,         meta: { ability: 'manage_users' } },
-      { path: 'vendors',  name: 'vendor-management',     component: VendorManagement,       meta: { ability: 'manage_vendors' } },
+      { path: 'orders', name: 'order-management', component: OrderManagement, meta: { ability: 'manage_orders' } },
+      { path: 'products', name: 'product-management', component: ProductManagement, meta: { ability: 'manage_products' } },
+      { path: 'reviews', name: 'reviews-reports', component: ReviewsandReports, meta: { ability: 'manage_reviews' } },
+      { path: 'settings', name: 'site-settings', component: SiteSettings, meta: { ability: 'manage_site_settings' } },
+      { path: 'users', name: 'user-management', component: UserManagement, meta: { ability: 'manage_users' } },
+      { path: 'vendors', name: 'vendor-management', component: VendorManagement, meta: { ability: 'manage_vendors' } },
     ]
-  },
+  }
 ]
 
 const router = createRouter({
@@ -110,11 +110,10 @@ const router = createRouter({
   routes,
 })
 
-// Global Navigation Guard
+// Navigation Guard
 router.beforeEach((to, from, next) => {
   const auth = useAuth()
-
-  const { isAuthenticated, hasAbility } = auth // Now we get these from the returned value of useAuth()
+  const { isAuthenticated, hasAbility } = auth
 
   if (to.meta.requiresAuth && !isAuthenticated.value) {
     return next({ name: 'login' })

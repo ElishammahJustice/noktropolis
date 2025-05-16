@@ -77,6 +77,7 @@
         <v-btn icon class="ml-2" v-bind="props">
           <v-icon>mdi-account</v-icon>
         </v-btn>
+
       </template>
 
       <v-list density="compact">
@@ -144,6 +145,7 @@ const navDrawerItems = [
   { title: 'Home', icon: 'mdi-home', route: '/' },
   { title: 'Shop', icon: 'mdi-shopping', route: '/shop' },
   { title: 'Afro Hub', icon: 'mdi-earth', route: '/afrohub' },
+  { title: 'Sign Up', icon: 'mdi-earth', route: '/signup' },
   { title: 'Blog', icon: 'mdi-newspaper', route: '/blog' },
   { title: 'About Us', icon: 'mdi-information', route: '/about' },
   { title: 'Contact Us', icon: 'mdi-email', route: '/contact' },

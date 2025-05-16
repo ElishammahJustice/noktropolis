@@ -100,7 +100,7 @@
 </template>
 
 <script setup>
-import { ref,  } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '../router/services/auth.service.js'
 
@@ -125,7 +125,7 @@ const rules = {
   required: (value) => !!value || 'This field is required.',
   email: (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || 'Invalid email.',
   minLength: (value) => value.length >= 8 || 'Password must be at least 8 characters.',
-  confirmPassword: (value) => value === password.value || 'Passwords do not match.',
+  confirmPassword: (value) => value === password.value || 'Passwords do not match.'
 }
 
 async function handleSignup() {
@@ -133,37 +133,37 @@ async function handleSignup() {
   successMessage.value = ''
 
   if (!fullName.value || !email.value || !password.value || !confirmPassword.value || !role.value) {
-    errorMessage.value = "Please fill in all required fields."
+    errorMessage.value = 'Please fill in all required fields.'
     return
   }
 
   if (password.value !== confirmPassword.value) {
-    errorMessage.value = "Passwords do not match."
+    errorMessage.value = 'Passwords do not match.'
     return
   }
 
   try {
     const response = await register({
-  name: fullName.value,
-  email: email.value,
-  password: password.value,
-  password_confirmation: confirmPassword.value, // ✅ Required for Laravel validation
-  role: role.value.toLowerCase(),
-});
+      name: fullName.value,
+      email: email.value,
+      password: password.value,
+      password_confirmation: confirmPassword.value, // ✅ Required for Laravel validation
+      role: role.value.toLowerCase()
+    })
 
-    console.log(response.data); // ✅ Log response data
+    console.log(response.data) // ✅ Log response data
 
     // ✅ Success message
-    successMessage.value = "Signup successful! Redirecting to login...";
-    setTimeout(() => router.push({ name: 'Login' }), 2000);
+    successMessage.value = 'Signup successful! Redirecting to login...'
+    setTimeout(() => router.push({ name: 'login' }), 2000)
 
   } catch (err) {
-    errorMessage.value = err.response?.data?.message || "Signup failed. Please try again.";
+    errorMessage.value = err.response?.data?.message || 'Signup failed. Please try again.'
   }
 }
 
 function goToLogin() {
-  router.push({ name: 'Login' })
+  router.push({ name: 'login' })
 }
 </script>
 
@@ -171,6 +171,7 @@ function goToLogin() {
 .fill-height {
   min-height: 100vh;
 }
+
 .v-card {
   border-radius: 10px;
 }
